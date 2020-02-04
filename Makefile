@@ -18,12 +18,12 @@ run:
 	$(GORUN) main.go > $(OUTPUT_NAME)
 
 dist: tar
-	$(info "Making archive: $(ARCHIVE)")
+	$(info Making archive: $(ARCHIVE))
 	git archive -o $(ARCHIVE) HEAD^{tree}
 
 tar:
-	ARCHIVE=../$(BINARY_NAME).tar
+	$(eval ARCHIVE:=../$(BINARY_NAME).tar)
 	
 zip:
-	ARCHIVE=../$(BINARY_NAME).zip
+	$(eval ARCHIVE:=../$(BINARY_NAME).zip)
 	
