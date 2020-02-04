@@ -18,4 +18,7 @@ run:
 dist: tar
 
 tar:
-	git archive --format=tar.gz -o ../$(BINARY_NAME).tar.gz HEAD
+	git archive --format=tar -o ../$(BINARY_NAME).tar HEAD^{tree}
+
+zip:
+	git archive --format=zip -o ../$(BINARY_NAME).zip HEAD^{tree}
