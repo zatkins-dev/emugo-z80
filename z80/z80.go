@@ -9,7 +9,7 @@ import (
 type Word uint16
 
 func byteToHigh(w Word, b Word) Word { return ((b << 8) | (w & 0x00FF)) }
-func byteToLow(w Word, b Word) Word  { return ((b >> 8) | (w & 0xFF00)) }
+func byteToLow(w Word, b Word) Word  { return (b | (w & 0xFF00)) }
 
 func hightoHigh(dst Word, src Word) Word { return ((src & 0xFF00) | (dst & 0x00FF)) }
 func lowtoHigh(dst Word, src Word) Word  { return ((src << 8) | (dst & 0x00FF)) }
@@ -41,6 +41,7 @@ func printRegisters() {
 }
 
 var clockCycles []byte = make([]byte, 0xFF)
+var instructions4cc []byte = []byte{0x04, 0x05, 0x0C, 0x0D, 0x14, 0x15, 0x1C, 0x1D, 0x24, 0x25, 0x2C, 0x2D, 0x3C, 0x3D, 0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA7, 0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB7, 0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAF, 0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x87, 0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x97}
 var instructionsCount []uint32 = make([]uint32, 0xFF)
 var instruction byte = 0x00
 var halted bool = false
@@ -88,6 +89,9 @@ func InitMemory() {
 	clockCycles[0x76] = 4
 	clockCycles[0x03] = 4
 	clockCycles[0x80] = 4
+	for ind := range instructions4cc {
+		clockCycles[instructions4cc[ind]] = 4
+	}
 }
 
 // LoadTest loads test instructions
@@ -141,34 +145,171 @@ func CPUStep() {
 	switch instruction {
 	// NOP
 	case 0x0:
-		break
-
 	// HALT
 	case 0x76:
 		halted = true
-		break
-
-	// INC A    Example for increments a particular byte
+	/* INC/DEC */
+	// INC B
+	case 0x04:
+		BC = hightoHigh(BC, BC+0x0100)
+	// DEC B
+	case 0x05:
+		BC = hightoHigh(BC, BC-0x0100)
+	// INC C
+	case 0x0C:
+		BC = lowtoLow(BC, BC+0x0001)
+	// DEC C
+	case 0x0D:
+		BC = lowtoLow(BC, BC-0x0001)
+	// INC D
+	case 0x14:
+		DE = hightoHigh(DE, DE+0x0100)
+	// DEC D
+	case 0x15:
+		DE = hightoHigh(DE, DE-0x0100)
+	// INC E
+	case 0x1C:
+		DE = lowtoLow(DE, DE+0x0001)
+	// DEC E
+	case 0x1D:
+		DE = lowtoLow(DE, DE-0x0001)
+	// INC H
+	case 0x24:
+		HL = hightoHigh(HL, HL+0x0100)
+	// DEC H
+	case 0x25:
+		HL = hightoHigh(HL, HL-0x0100)
+	// INC L
+	case 0x2C:
+		HL = lowtoLow(HL, HL+0x0001)
+	// DEC L
+	case 0x2D:
+		HL = lowtoLow(HL, HL-0x0001)
+	// INC A
 	case 0x3C:
 		AF = hightoHigh(AF, AF+0x0100)
-		//ignore setting flags for now
-		break
-
 	// INC BC    Example for increments a word
 	case 0x03:
 		BC++
 		//ignore setting flags for now
-		break
 
-	// ADD A,B   Add  byte to a byte  result in A
+	/* AND */
+	// AND A,B
+	case 0xA0:
+		AF = byteToHigh(AF, (AF>>8)&(BC>>8))
+	// AND A,C
+	case 0xA1:
+		AF = byteToHigh(AF, (AF>>8)&(BC))
+	// AND A,D
+	case 0xA2:
+		AF = byteToHigh(AF, (AF>>8)&(DE>>8))
+	// AND A,E
+	case 0xA3:
+		AF = byteToHigh(AF, (AF>>8)&(DE))
+	// AND A,H
+	case 0xA4:
+		AF = byteToHigh(AF, (AF>>8)&(HL>>8))
+	// AND A,L
+	case 0xA5:
+		AF = byteToHigh(AF, (AF>>8)&(HL))
+	// AND A,A
+	case 0xA7:
+		AF = byteToHigh(AF, (AF>>8)&(AF>>8))
+
+	/* OR */
+	// OR A,B
+	case 0xB0:
+		AF = byteToHigh(AF, (AF>>8)|(BC>>8))
+	// OR A,C
+	case 0xB1:
+		AF = byteToHigh(AF, (AF>>8)|(BC))
+	// OR A,D
+	case 0xB2:
+		AF = byteToHigh(AF, (AF>>8)|(DE>>8))
+	// OR A,E
+	case 0xB3:
+		AF = byteToHigh(AF, (AF>>8)|(DE))
+	// OR A,H
+	case 0xB4:
+		AF = byteToHigh(AF, (AF>>8)|(HL>>8))
+	// OR A,L
+	case 0xB5:
+		AF = byteToHigh(AF, (AF>>8)|(HL))
+	// OR A, A pretty sure this is a NOP
+	case 0xB7:
+		AF = byteToHigh(AF, (AF>>8)|(AF>>8))
+
+	/* XOR */
+	// XOR A,B
+	case 0xA8:
+		AF = byteToHigh(AF, (AF>>8)^(BC>>8))
+	// XOR A,C
+	case 0xA9:
+		AF = byteToHigh(AF, (AF>>8)^(BC))
+	// XOR A,D
+	case 0xAA:
+		AF = byteToHigh(AF, (AF>>8)^(DE>>8))
+	// XOR A,E
+	case 0xAB:
+		AF = byteToHigh(AF, (AF>>8)^(DE))
+	// XOR A,H
+	case 0xAC:
+		AF = byteToHigh(AF, (AF>>8)^(HL>>8))
+	// XOR A,L
+	case 0xAD:
+		AF = byteToHigh(AF, (AF>>8)^(HL))
+	// XOR A,A
+	case 0xAF:
+		AF = byteToHigh(AF, (AF>>8)^(AF>>8))
+
+	/* ADD */
+	// ADD A,B
 	case 0x80:
 		AF = byteToHigh(AF, (AF>>8)+(BC>>8))
-		//ignore setting flags for now
-		break
+	// ADD A,C
+	case 0x81:
+		AF = byteToHigh(AF, (AF>>8)+(BC))
+	// ADD A,D
+	case 0x82:
+		AF = byteToHigh(AF, (AF>>8)+(DE>>8))
+	// ADD A,E
+	case 0x83:
+		AF = byteToHigh(AF, (AF>>8)+(DE))
+	// ADD A,H
+	case 0x84:
+		AF = byteToHigh(AF, (AF>>8)+(HL>>8))
+	// ADD A,L
+	case 0x85:
+		AF = byteToHigh(AF, (AF>>8)+(HL))
+	// ADD A,H
+	case 0x87:
+		AF = byteToHigh(AF, (AF>>8)+(AF>>8))
+
+	/* SUB */
+	// SUB A,B
+	case 0x90:
+		AF = byteToHigh(AF, (AF>>8)-(BC>>8))
+	// SUB A,C
+	case 0x91:
+		AF = byteToHigh(AF, (AF>>8)-(BC))
+	// SUB A,D
+	case 0x92:
+		AF = byteToHigh(AF, (AF>>8)-(DE>>8))
+	// SUB A,E
+	case 0x93:
+		AF = byteToHigh(AF, (AF>>8)-(DE))
+	// SUB A,H
+	case 0x94:
+		AF = byteToHigh(AF, (AF>>8)-(HL>>8))
+	// SUB A,L
+	case 0x95:
+		AF = byteToHigh(AF, (AF>>8)-(HL))
+	// SUB A,H
+	case 0x97:
+		AF = byteToHigh(AF, (AF>>8)-(AF>>8))
 
 	default:
 		fmt.Printf("Instruction %02x not valid (at %04x)\n\n", instruction, PC-1)
 		halt()
-		break
 	}
 }

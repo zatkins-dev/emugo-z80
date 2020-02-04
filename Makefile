@@ -1,0 +1,20 @@
+GOCMD=go
+GOBUILD=$(GOCMD) build
+GOCLEAN=$(GOCMD) clean
+GOTEST=$(GOCMD) test
+GOGET=$(GOCMD) get
+BINARY_NAME_WIN=hw1-atkins.exe
+BINARY_NAME=z80-atkins
+
+$(BINARY_NAME):
+	$(GOBUILD) -o $(BINARY_NAME)
+	$(GOBUILD) -o $(BINARY_NAME_WIN)
+
+clean:
+	$(GOCLEAN)
+	rm $(BINARY_NAME)
+	rm $(BINARY_NAME_WIN)
+
+run:
+	$(GOBUILD) -o $(BINARY_NAME)
+	./$(BINARY_NAME)
