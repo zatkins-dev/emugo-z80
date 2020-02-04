@@ -18,4 +18,4 @@ run:
 dist: tar
 
 tar:
-	git archive --format=tar.gz -o ../$(BINARY_NAME) HEAD
+	git archive --format=tar.gz -o ../$(BINARY_NAME).tar.gz HEAD
