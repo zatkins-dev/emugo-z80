@@ -18,4 +18,4 @@ run:
 dist: tar
 
 tar:
-	tar -czvf --exclude-vcs ../$(BINARY_NAME).tar.gz ../$(BINARY_NAME)
+	git archive --format=tar.gz -o ../$(BINARY_NAME) HEAD
