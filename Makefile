@@ -4,6 +4,8 @@ GORUN=$(GOCMD) run
 GOCLEAN=$(GOCMD) clean
 BINARY_NAME_WIN=hw1-atkins.exe
 BINARY_NAME=hw1-atkins
+OUTPUT_NAME=z80output.txt
+OUTPUT_EXISTS:=$(or $(and $(wildcard $(OUTPUT_NAME)),1),0)
 
 all:
 	$(GOBUILD) -o $(BINARY_NAME_WIN)
@@ -13,12 +15,15 @@ clean:
 	$(GOCLEAN)
 
 run:
-	$(GORUN) main.go
+	$(GORUN) main.go > $(OUTPUT_NAME)
 
 dist: tar
+	$(info "Making archive: $(ARCHIVE)")
+	git archive -o $(ARCHIVE) HEAD^{tree}
 
 tar:
-	git archive --format=tar -o ../$(BINARY_NAME).tar HEAD^{tree}
-
+	ARCHIVE=../$(BINARY_NAME).tar
+	
 zip:
-	git archive --format=zip -o ../$(BINARY_NAME).zip HEAD^{tree}
+	ARCHIVE=../$(BINARY_NAME).zip
+	
