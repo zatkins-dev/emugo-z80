@@ -2,19 +2,20 @@ GOCMD=go
 GOBUILD=$(GOCMD) build
 GORUN=$(GOCMD) run
 GOCLEAN=$(GOCMD) clean
-GOTEST=$(GOCMD) test
-GOGET=$(GOCMD) get
 BINARY_NAME_WIN=hw1-atkins.exe
-BINARY_NAME=z80-atkins
+BINARY_NAME=hw1-atkins
 
 all:
-	$(GOBUILD) -o $(BINARY_NAME)
 	$(GOBUILD) -o $(BINARY_NAME_WIN)
+	$(GOBUILD) -o $(BINARY_NAME)
 
 clean:
 	$(GOCLEAN)
-	rm $(BINARY_NAME)
-	rm $(BINARY_NAME_WIN)
 
 run:
 	$(GORUN) main.go
+
+dist: tar
+
+tar:
+	tar -czvf --exclude-vcs ../$(BINARY_NAME).tar.gz ../$(BINARY_NAME)
