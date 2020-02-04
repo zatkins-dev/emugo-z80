@@ -86,7 +86,7 @@ func InitMemory() {
 		clockCycles[i] = 1
 	}
 	clockCycles[0x3C] = 4
-	clockCycles[0x76] = 4
+	clockCycles[0x76] = 1
 	clockCycles[0x03] = 4
 	clockCycles[0x80] = 4
 	for ind := range instructions4cc {
@@ -188,6 +188,9 @@ func CPUStep() {
 	// INC A
 	case 0x3C:
 		AF = hightoHigh(AF, AF+0x0100)
+	// DEC A
+	case 0x3D:
+		AF = hightoHigh(AF, AF-0x0100)
 	// INC BC    Example for increments a word
 	case 0x03:
 		BC++
@@ -281,7 +284,7 @@ func CPUStep() {
 	// ADD A,L
 	case 0x85:
 		AF = byteToHigh(AF, (AF>>8)+(HL))
-	// ADD A,H
+	// ADD A,A
 	case 0x87:
 		AF = byteToHigh(AF, (AF>>8)+(AF>>8))
 
@@ -304,7 +307,7 @@ func CPUStep() {
 	// SUB A,L
 	case 0x95:
 		AF = byteToHigh(AF, (AF>>8)-(HL))
-	// SUB A,H
+	// SUB A,A
 	case 0x97:
 		AF = byteToHigh(AF, (AF>>8)-(AF>>8))
 

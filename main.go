@@ -6,6 +6,7 @@ import (
 
 func main() {
 	z80.InitMemory()
+	// z80.LoadTest()
 	z80.LoadFirst()
 
 	z80.CPUPower = true
