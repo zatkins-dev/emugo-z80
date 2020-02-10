@@ -1,3 +1,3 @@
-module github.com/zatkins-dev/hw1-atkins
+module github.com/zatkins-dev/z80emulator
 
 go 1.13

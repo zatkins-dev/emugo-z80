@@ -103,6 +103,18 @@ func LoadTest() {
 	writeByte(0x0104, 0x76)
 }
 
+// LoadTest2 loads test instructions
+func LoadTest2() {
+	BC = 0x3331
+	writeByte(0x0100, 0x3C)
+	writeByte(0x0101, 0x3C)
+	writeByte(0x0102, 0x3C)
+	writeByte(0x0103, 0x3C)
+	writeByte(0x0104, 0xA0)
+	writeByte(0x0105, 0xA1)
+	writeByte(0x0106, 0x76)
+}
+
 // LoadFirst loads first hw assignment instructions
 func LoadFirst() {
 	writeByte(0x0100, 0x3C)

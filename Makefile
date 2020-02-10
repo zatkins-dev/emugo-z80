@@ -2,8 +2,8 @@ GOCMD=go
 GOBUILD=$(GOCMD) build
 GORUN=$(GOCMD) run
 GOCLEAN=$(GOCMD) clean
-BINARY_NAME_WIN=hw1-atkins.exe
-BINARY_NAME=hw1-atkins
+BINARY_NAME_WIN=z80emulator.exe
+BINARY_NAME=z80emulator
 OUTPUT_NAME=z80output.txt
 OUTPUT_EXISTS:=$(or $(and $(wildcard $(OUTPUT_NAME)),1),0)
 
