@@ -17,7 +17,7 @@ clean:
 run:
 	$(GORUN) main.go > $(OUTPUT_NAME)
 
-dist: tar
+dist: clean tar
 	$(info Making archive: $(ARCHIVE))
 	git archive -o $(ARCHIVE) HEAD^{tree}
 
