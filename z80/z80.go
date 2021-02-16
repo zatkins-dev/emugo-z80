@@ -166,6 +166,20 @@ func LoadSecond() {
 	writeByte(0x0110, 0x76) // HALT
 }
 
+// LoadThird loads test data for hw 6
+func LoadThird() {
+	writeByte(0x0100, 0x1D) // DEC E
+	writeByte(0x0101, 0x3C) // INC A
+	writeByte(0x0102, 0x53) // LD D, E
+	writeByte(0x0103, 0x15) // DEC D
+	writeByte(0x0104, 0xB2) // OR D
+	writeByte(0x0105, 0xA1) // AND C
+	writeByte(0x0106, 0x4A) // LD C, D
+	writeByte(0x0107, 0xA0) // AND B
+	writeByte(0x0108, 0x41) // LD B, C
+	writeByte(0x0109, 0x76) // Halt
+}
+
 // CPUStep executes next instruction on the stack
 func CPUStep() {
 	if !CPUPower {
